@@ -164,15 +164,20 @@ RUN adduser $USER && \
 # 작업 디렉토리 설정
 WORKDIR /home/$USER
 
-COPY ./install-build-requirements.sh .
+# Copy scripts and ensure they have execute permissions
+COPY --chown=$USER:$USER ./install-build-requirements.sh ./install-build-requirements.sh
+COPY --chown=$USER:$USER ./.cubrid_env.sh ./.cubrid_env.sh
 
-RUN source ./install-build-requirements.sh
+# Make sure the scripts have execute permissions
+RUN chmod +x ./install-build-requirements.sh ./install-build-requirements.sh
 
-COPY ./.cubrid_env.sh .
+# Run the install-build-requirements script
+RUN ./install-build-requirements.sh
 
+# Source .cubrid_env.sh in .bashrc
 RUN echo 'source $HOME/.cubrid_env.sh' >> .bashrc
 
-# 기본 명령어 설정
+# Set the entrypoint to bash
 CMD ["/bin/bash"]
 ```
 

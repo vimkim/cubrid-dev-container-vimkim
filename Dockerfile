@@ -20,16 +20,19 @@ USER $USER
 # Ensure the working directory exists and has correct permissions
 WORKDIR /home/$USER
 
-COPY ./install-build-requirements.sh .
 
-RUN source ./install-build-requirements.sh
+# Copy scripts and ensure they have execute permissions
+COPY --chown=$USER:$USER ./install-build-requirements.sh ./install-build-requirements.sh
+COPY --chown=$USER:$USER ./.cubrid_env.sh ./.cubrid_env.sh
 
-COPY ./.cubrid_env.sh .
+# Make sure the scripts have execute permissions
+RUN chmod +x ./install-build-requirements.sh ./install-build-requirements.sh
 
+# Run the install-build-requirements script
+RUN ./install-build-requirements.sh
+
+# Source .cubrid_env.sh in .bashrc
 RUN echo 'source $HOME/.cubrid_env.sh' >> .bashrc
-
-# RUN ./install-build-requirements.sh
 
 # Set the entrypoint to bash
 CMD ["/bin/bash"]
-
